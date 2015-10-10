@@ -1,0 +1,29 @@
+# CYK-Parser
+
+CYK Algorithm Implementation Notes
+
+Please run the run.sh included in this file to get all results.
+
+Question 5 Remarks
+Note: the full performance report can be found in file eval_cky
+
+Overall, the model has an F1 score of 0.714. On my laptop, the runtime is a little over two minutes, which is acceptable. The model performed especially well for nonterminals that tend to have a very definite relationship with certain terminals. Examples include the fully correct mapping of period (.) and conjunction ("AND"), as well as the good mapping of pronouns (F-score = 0.963), particle (F-score = 0.967), and determinants (F-score = 0.982). Where the model struggles a bit more is the intermediary trees that were formed as a result of CNF form. Trees that have the form of X+Y tend to have a lower level of correctness.
+
+Question 6 Remarks
+Note: the full performance report can be found in file eval_vertical
+
+The verticalization proves to be  useful, providing an F-score of 0.742. The runtime is only marginally impacted, clocking at slightly over 3 minutes, which I consider acceptable for a much larger set of nonterminals. I did not need to modify my implementation for Question 5 to achieve this level of efficiency. In general, ther has been in an increase in the F-score across the board, with the most dramatic improvement found in the identificaiton of SBAR, which improved from a meager 0.056 to a whopping 0.5. Some tags suffered a minor decrease in performance, such as ADVP+ADV, NP+ADJ, NP+NOUN, PRT+PRT, but the impact is less significant than the improvement the model has brought forth. The context sensitivity was mostly the product of the original tree arrangement, and some of the effect may have been lost in the CNF conversion process, which may partly explain the decreased performance in the tags that are byproducts of the conversion process.
+
+A specific example where the original model was more correct in predicting the tagging of adverbs (such as down):
+
+ORIGINAL KEY:
+["S", ["NP", ["NOUN", "Deal"], ["NOUN", "stocks"]], ["S", ["VP", ["VERB", "led"], ["VP", ["NP", ["DET", "the"], ["NOUN", "market"]], ["VP", ["ADVP+ADV", "down"], ["SBAR", ["ADP", "as"], ["S", ["NP+PRON", "they"], ["VP", ["VERB", "absorbed"], ["NP", ["DET", "the"], ["NP", ["ADJ", "heaviest"], ["NOUN", "losses"]]]]]]]]], [".", "."]]]
+
+PURE CKY:
+["S", ["NP", ["NOUN", "Deal"], ["NOUN", "stocks"]], ["S", ["VP", ["VERB", "led"], ["NP", ["DET", "the"], ["NOUN", "market"]]], ["S", ["ADVP", ["ADV", "down"], ["ADV", "as"]], ["S", ["NP+PRON", "they"], ["S", ["VP", ["VERB", "absorbed"], ["NP", ["DET", "the"], ["NP", ["NOUN", "heaviest"], ["NOUN", "losses"]]]], [".", "."]]]]]]
+
+VERTICALIZED:
+["S", ["NP^<S>", ["NOUN", "Deal"], ["NOUN", "stocks"]], ["S", ["VP^<S>", ["VERB", "led"], ["VP", ["NP^<VP>", ["DET", "the"], ["NOUN", "market"]], ["VP", ["PRT^<VP>+PRT", "down"], ["SBAR^<VP>", ["ADP", "as"], ["S^<SBAR>", ["NP^<S>+PRON", "they"], ["VP^<S>", ["VERB", "absorbed"], ["NP^<VP>", ["DET", "the"], ["NP", ["NOUN", "heaviest"], ["NOUN", "losses"]]]]]]]]], [".", "."]]]
+
+
+
